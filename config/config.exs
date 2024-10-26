@@ -1,4 +1,4 @@
 import Config
 
-  config :mix_test_interactive,
-    clear: true
+config :mix_test_interactive,
+  clear: true

@@ -29,10 +29,14 @@ defmodule CommandedBoilerplate.MixProject do
       {:commanded, "~> 1.4"},
       {:commanded_ecto_projections, "~> 1.4"},
       {:commanded_eventstore_adapter, "~> 1.4"},
+      {:hammox, "~> 0.7", only: :test},
       {:jason, ">= 1.2.0"},
       {:mix_test_interactive, "~> 4.0", only: [:dev, :test]},
+      {:mox, "~> 1.1", only: :test},
       {:newt, ">= 8.0.1"},
       {:stream_data, ">= 0.0.0"},
+      {:typed_ecto_schema, "~> 0.4"},
+      {:typed_struct, "~> 0.3"},
       {:vex, ">= 0.9.0"}
     ]
   end
