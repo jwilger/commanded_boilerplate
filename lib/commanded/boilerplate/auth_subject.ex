@@ -23,13 +23,7 @@ defmodule Commanded.Boilerplate.AuthSubject do
   @typedoc "Map representation of an AuthSubject"
   @type as_map() :: %{source: source(), id: id(), permissions: permissions()}
 
-  # dummy permission exists to support property testing of command authorization
-  # and is needed until additional, legitimate permissions are added
-  @valid_permissions ~w(
-    create_customer
-    superuser
-    dummy
-    )
+  @valid_permissions Application.compile_env(:commanded_boilerplate, :valid_permissions, [])
 
   @system_user %{
     source: "SYSTEM",

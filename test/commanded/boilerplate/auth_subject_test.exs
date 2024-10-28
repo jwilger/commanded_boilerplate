@@ -5,7 +5,7 @@ defmodule Commanded.Boilerplate.AuthSubjectTest do
 
   describe "valid_permissions/0" do
     test "returns the list of valid permissions" do
-      assert AuthSubject.valid_permissions() == ~w(create_customer superuser dummy)
+      assert AuthSubject.valid_permissions() == ~w(superuser create_customer)
     end
   end
 
@@ -99,8 +99,8 @@ defmodule Commanded.Boilerplate.AuthSubjectTest do
 
     test "checks if the AuthSubject has any of the given permissions" do
       auth_subject = %AuthSubject{source: "test", id: "123", permissions: ["create_customer"]}
-      assert AuthSubject.has_permission?(auth_subject, ["create_customer", "superuser"])
-      refute AuthSubject.has_permission?(auth_subject, ["superuser", "dummy"])
+      assert AuthSubject.has_permission?(auth_subject, ["create_customer"])
+      refute AuthSubject.has_permission?(auth_subject, ["superuser"])
     end
   end
 
