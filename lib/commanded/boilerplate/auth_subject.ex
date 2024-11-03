@@ -23,7 +23,8 @@ defmodule Commanded.Boilerplate.AuthSubject do
   @typedoc "Map representation of an AuthSubject"
   @type as_map() :: %{source: source(), id: id(), permissions: permissions()}
 
-  @valid_permissions Application.compile_env(:commanded_boilerplate, :valid_permissions, [])
+  @valid_permissions Application.compile_env(:commanded_boilerplate, :valid_permissions, []) ++
+                       ["superuser"]
 
   @system_user %{
     source: "SYSTEM",
