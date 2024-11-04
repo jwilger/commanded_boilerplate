@@ -15,6 +15,11 @@ defmodule Commanded.Boilerplate.TestCommand do
 
   aggregate do
     field(:id, binary())
+
+    @impl Commanded.Boilerplate.Aggregate
+    def apply(aggregate, %TestAggregateCreated{} = _event) do
+      aggregate
+    end
   end
 
   @impl Commanded.Boilerplate.Command

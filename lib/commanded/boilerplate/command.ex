@@ -212,8 +212,11 @@ defmodule Commanded.Boilerplate.Command do
       defmodule Aggregate do
         @moduledoc false
 
+        @behaviour Commanded.Boilerplate.Aggregate
+
         unquote(ast)
 
+        @impl Commanded.Boilerplate.Aggregate
         def apply(aggregate, event) do
           Logger.debug(
             "Skipping application of event #{inspect(event.__struct__)} to aggregate #{inspect(aggregate.__struct__)}. Add an `apply/2` clause to handle this event."

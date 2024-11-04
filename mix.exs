@@ -29,6 +29,7 @@ defmodule CommandedBoilerplate.MixProject do
       {:commanded, "~> 1.4"},
       {:commanded_ecto_projections, "~> 1.4"},
       {:commanded_eventstore_adapter, "~> 1.4"},
+      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:hammox, "~> 0.7", only: :test},
       {:jason, ">= 1.2.0"},
       {:mix_test_interactive, "~> 4.0", only: [:dev, :test]},
