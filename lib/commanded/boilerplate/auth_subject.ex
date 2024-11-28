@@ -23,9 +23,6 @@ defmodule Commanded.Boilerplate.AuthSubject do
   @typedoc "Map representation of an AuthSubject"
   @type as_map() :: %{source: source(), id: id(), permissions: permissions()}
 
-  @valid_permissions Application.compile_env(:commanded_boilerplate, :valid_permissions, []) ++
-                       ["superuser"]
-
   @system_user %{
     source: "SYSTEM",
     id: "SYSTEM",
@@ -49,7 +46,7 @@ defmodule Commanded.Boilerplate.AuthSubject do
   Returns the list of all valid permissions that have been defined.
   """
   @spec valid_permissions() :: list(String.t())
-  def valid_permissions, do: @valid_permissions
+  def valid_permissions, do: Application.get_env(:commanded_boilerplate, :valid_permissions, []) ++ ["superuser"]
 
   @doc """
   Creates a new AuthSubject from the given data.
