@@ -46,7 +46,8 @@ defmodule Commanded.Boilerplate.AuthSubject do
   Returns the list of all valid permissions that have been defined.
   """
   @spec valid_permissions() :: list(String.t())
-  def valid_permissions, do: Application.get_env(:commanded_boilerplate, :valid_permissions, []) ++ ["superuser"]
+  def valid_permissions,
+    do: Application.get_env(:commanded_boilerplate, :valid_permissions, []) ++ ["superuser"]
 
   @doc """
   Creates a new AuthSubject from the given data.
@@ -80,7 +81,15 @@ defmodule Commanded.Boilerplate.AuthSubject do
   @spec validate_permissions(term()) :: :ok | {:error, String.t()}
   def validate_permissions(permissions)
       when is_list(permissions) do
-    if Enum.all?(permissions, &(&1 in valid_permissions())) do
+    if Enum.all?(permissions, &is_binary/1) do
+      invalid_permissions = Enum.reject(permissions, &(&1 in valid_permissions()))
+
+      if Enum.any?(invalid_permissions) do
+        Logger.debug(fn ->
+          "Invalid permissions used in AuthSubject, #{inspect(invalid_permissions)}."
+        end)
+      end
+
       :ok
     else
       {:error, "must be a list of valid permissions"}

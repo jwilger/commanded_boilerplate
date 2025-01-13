@@ -3,6 +3,9 @@ defmodule Commanded.Boilerplate.AuthSubjectTest do
 
   use Commanded.Boilerplate.TestCase
 
+  # Because we debug log invalid permissions
+  @moduletag capture_log: true
+
   describe "valid_permissions/0" do
     test "returns the list of valid permissions" do
       assert AuthSubject.valid_permissions() == ~w(create_customer superuser)
@@ -11,13 +14,13 @@ defmodule Commanded.Boilerplate.AuthSubjectTest do
 
   describe "validate_permissions/1" do
     property "validates a list of valid permissions" do
-      check all(permissions <- list_of(member_of(AuthSubject.valid_permissions()))) do
+      check all(permissions <- list_of(string(:alphanumeric, min_length: 1))) do
         assert AuthSubject.validate_permissions(permissions) == :ok
       end
     end
 
     property "returns an error for invalid permissions" do
-      check all(permissions <- list_of(string(:alphanumeric, min_length: 1))) do
+      check all(permissions <- list_of(term() |> filter(fn t -> !is_binary(t) end))) do
         if Enum.any?(permissions, &(&1 not in AuthSubject.valid_permissions())) do
           assert AuthSubject.validate_permissions(permissions) ==
                    {:error, "must be a list of valid permissions"}
@@ -57,9 +60,9 @@ defmodule Commanded.Boilerplate.AuthSubjectTest do
       check all(
               source <- string(:alphanumeric, min_length: 1),
               id <- string(:alphanumeric, min_length: 1),
-              permissions <- list_of(string(:alphanumeric, min_length: 1))
+              permissions <- list_of(term())
             ) do
-        if Enum.any?(permissions, &(&1 not in AuthSubject.valid_permissions())) do
+        if Enum.any?(permissions, &(!is_binary(&1))) do
           assert {:error, _} =
                    AuthSubject.new(%{source: source, id: id, permissions: permissions})
         end

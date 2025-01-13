@@ -15,7 +15,7 @@
         devShells.default = mkShell {
           buildInputs = [
             beam.interpreters.erlang_27
-            beam.packages.erlang_27.elixir_1_17
+            beam.packages.erlang_27.elixir_1_18
             nodePackages.nodejs
             flyctl
           ]

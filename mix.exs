@@ -4,8 +4,8 @@ defmodule CommandedBoilerplate.MixProject do
   def project do
     [
       app: :commanded_boilerplate,
-      version: "0.1.1",
-      elixir: "~> 1.17",
+      version: "0.1.2",
+      elixir: "~> 1.18",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       deps: deps()
