@@ -8,7 +8,8 @@ defmodule Commanded.Boilerplate.QueryTest do
     TestAllQuery,
     TestOneQuery,
     TestProjection,
-    TestEmptyQuery
+    TestEmptyQuery,
+    TestQueryWithResultHandler
   }
 
   setup do
@@ -118,6 +119,23 @@ defmodule Commanded.Boilerplate.QueryTest do
     test "returns validation errors" do
       query = %TestAllQuery{auth_subject: AuthSubject.system_user(), name: 123}
       {:error, {:invalid_query, _errors}} = Commanded.Boilerplate.Query.execute(query)
+    end
+  end
+
+  describe "execute with handle_result/2 callback" do
+    test "should modify successful results when handle_result/2 is implemented" do
+      query = %TestQueryWithResultHandler{
+        auth_subject: AuthSubject.system_user(),
+        name: "test"
+      }
+
+      expected = {:ok, %{
+        original_results: [%TestProjection{name: "test", value: 123}],
+        transformed: true,
+        query_name: "test"
+      }}
+
+      assert expected == Commanded.Boilerplate.Query.execute(query)
     end
   end
 end

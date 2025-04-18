@@ -33,6 +33,14 @@ defmodule Commanded.Boilerplate.Query do
 
   @callback to_query(t()) :: Ecto.Query.t()
 
+  @doc """
+  Callback that allows a query to manipulate the results before they are returned.
+
+  A default implementation that simply returns the result unchanged is provided when
+  using `use Commanded.Boilerplate.Query`.
+  """
+  @callback handle_result(result(), t()) :: result()
+
   defprotocol QueryOps do
     @moduledoc """
     Defines common functionality for the execution of queries against the read store
@@ -97,6 +105,11 @@ defmodule Commanded.Boilerplate.Query do
             def repo_fn(query), do: unquote(repo).one(query, [])
         end
       end
+
+      # Default implementation of handle_result/2
+      def handle_result(result, _query), do: result
+
+      defoverridable handle_result: 2
     end
   end
 
@@ -147,7 +160,8 @@ defmodule Commanded.Boilerplate.Query do
       case repo().with_auth_subject(query.auth_subject, fn ->
              run_query(query)
            end) do
-        {:ok, result} -> result
+        {:ok, result} ->
+          query.__struct__.handle_result(result, query)
         error -> error
       end
     end

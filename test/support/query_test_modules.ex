@@ -70,4 +70,34 @@ defmodule Commanded.Boilerplate.QueryTestModules do
       from(t in TestProjection, select: t)
     end
   end
+
+  # Test query with handle_result callback
+  defmodule TestQueryWithResultHandler do
+    use Commanded.Boilerplate.Query, repo: MockRepo, repo_fn: :all
+
+    inputs do
+      field(:name, :string)
+    end
+
+    validates(:name, string: true)
+
+    def to_query(query) do
+      import Ecto.Query
+      from(t in TestProjection, where: t.name == ^query.name, select: t)
+    end
+
+    # This callback should be called by execute/1 to allow
+    # transforming the result before returning it
+    def handle_result({:ok, results}, query) do
+      {:ok, %{
+        original_results: results,
+        transformed: true,
+        query_name: query.name
+      }}
+    end
+
+    def handle_result({:error, reason}, _query) do
+      {:error, {:enhanced_error, reason}}
+    end
+  end
 end
