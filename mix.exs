@@ -5,7 +5,7 @@ defmodule CommandedBoilerplate.MixProject do
     [
       app: :commanded_boilerplate,
       version: "0.1.2",
-      elixir: "~> 1.18",
+      elixir: "~> 1.20",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       deps: deps()
@@ -30,12 +30,11 @@ defmodule CommandedBoilerplate.MixProject do
       {:commanded_ecto_projections, "~> 1.4"},
       {:commanded_eventstore_adapter, "~> 1.4"},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
-      {:faker, "~> 0.19.0-alpha.1", compile: "sh ../../scripts/compile_faker", override: true},
       {:hammox, "~> 0.7", only: :test},
       {:jason, ">= 1.2.0"},
       {:mix_test_interactive, "~> 5.1", only: [:dev, :test]},
       {:mox, "~> 1.1", only: :test},
-      {:newt, ">= 8.0.1"},
+      {:newt, "~> 10.0"},
       {:stream_data, ">= 0.0.0"},
       {:typed_ecto_schema, "~> 0.4"},
       {:typed_struct, "~> 0.3"},
