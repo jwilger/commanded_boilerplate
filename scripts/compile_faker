@@ -1,0 +1,45 @@
+#!/bin/sh
+set -eu
+
+perl -CSDA -0pi -e 's/\x{85}/\\u0085/g; s/\x{2028}/\\u2028/g; s/\x{2029}/\\u2029/g' lib/faker/string.ex
+
+parent_mix_env="${MIX_ENV:-}"
+
+if [ -z "$parent_mix_env" ]; then
+  parent_pid="${PPID:-}"
+
+  while [ -n "$parent_pid" ] && [ "$parent_pid" -gt 1 ] 2>/dev/null
+  do
+    parent_command="$(ps -o args= -p "$parent_pid" || true)"
+
+    case "$parent_command" in
+      *"mix test"* | *"mix do"*test*)
+        parent_mix_env="test"
+        break
+        ;;
+    esac
+
+    parent_pid="$(ps -o ppid= -p "$parent_pid" | tr -d ' ' || true)"
+  done
+fi
+
+parent_mix_env="${parent_mix_env:-dev}"
+parent_build_path="${MIX_BUILD_PATH:-../../_build/$parent_mix_env}"
+ebin_path="$parent_build_path/lib/faker/ebin"
+
+mkdir -p "$ebin_path"
+
+find lib -name '*.ex' | sort | xargs elixirc \
+  -o "$ebin_path" \
+  -pa "$parent_build_path/lib/makeup/ebin" \
+  -pa "$parent_build_path/lib/makeup_elixir/ebin" \
+  -pa "$parent_build_path/lib/nimble_parsec/ebin"
+
+cat > "$ebin_path/faker.app" <<'EOF'
+{application, faker,
+ [{applications, [kernel, stdlib, elixir, logger, crypto, makeup]},
+  {env, [{locale, en},
+         {country, nil},
+         {random_module, 'Elixir.Faker.Random.Elixir'}]},
+  {vsn, "0.19.0-alpha.1"}]}.
+EOF
