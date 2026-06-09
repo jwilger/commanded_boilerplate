@@ -1,4 +1,4 @@
-defmodule Commanded.Boilerplate.Command.Router do
+defmodule CommandedAggregateless.Command.Router do
   @moduledoc """
   Provides basic DSQL for registering commands with the
   Commanded.Commands.Router
@@ -15,10 +15,10 @@ defmodule Commanded.Boilerplate.Command.Router do
     quote do
       use Commanded.Commands.Router
 
-      import Commanded.Boilerplate.Command.Router
+      import CommandedAggregateless.Command.Router
 
-      middleware(Commanded.Boilerplate.Command.ValidationMiddleware)
-      middleware(Commanded.Boilerplate.Command.AuthorizationMiddleware)
+      middleware(CommandedAggregateless.Command.ValidationMiddleware)
+      middleware(CommandedAggregateless.Command.AuthorizationMiddleware)
     end
   end
 
@@ -32,7 +32,7 @@ defmodule Commanded.Boilerplate.Command.Router do
       list with `by` and `prefix` keys. Defaults to the value returned by the
       aggregate module's `identifier/0` function function.
     - `:lifespan` - the lifespan module to user with this command. Defaults to
-      `Commanded.Boilerplate.Command.DefaultLifespan`
+      `CommandedAggregateless.Command.DefaultLifespan`
     - `:timeout` - the timeout for the command. Defaults to 5_000ms.
 
   Examples:
@@ -57,7 +57,7 @@ defmodule Commanded.Boilerplate.Command.Router do
           prefix: nil,
           # credo:disable-for-next-line Credo.Check.Warning.UnsafeToAtom
           aggregate: Module.concat(command_module, Aggregate),
-          lifespan: Commanded.Boilerplate.Command.DefaultLifespan,
+          lifespan: CommandedAggregateless.Command.DefaultLifespan,
           timeout: 5_000
         ])
 

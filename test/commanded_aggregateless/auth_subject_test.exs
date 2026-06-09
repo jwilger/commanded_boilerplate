@@ -1,7 +1,7 @@
-defmodule Commanded.Boilerplate.AuthSubjectTest do
-  alias Commanded.Boilerplate.AuthSubject
+defmodule CommandedAggregateless.AuthSubjectTest do
+  alias CommandedAggregateless.AuthSubject
 
-  use Commanded.Boilerplate.TestCase
+  use CommandedAggregateless.TestCase
 
   # Because we debug log invalid permissions
   @moduletag capture_log: true

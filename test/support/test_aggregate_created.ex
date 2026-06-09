@@ -1,4 +1,4 @@
-defmodule Commanded.Boilerplate.TestAggregateCreated do
+defmodule CommandedAggregateless.TestAggregateCreated do
   @moduledoc """
   Used by tests to create a TestAggregate
   """

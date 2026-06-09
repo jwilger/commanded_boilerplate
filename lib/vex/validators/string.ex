@@ -7,7 +7,6 @@ defmodule Vex.Validators.String do
 
   use Vex.Validator
 
-  @impl Vex.Validator.Behaviour
   def validate(data, options \\ [])
   def validate(data, true), do: validate(data)
 

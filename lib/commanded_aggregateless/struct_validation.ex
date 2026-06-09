@@ -1,10 +1,10 @@
-defmodule Commanded.Boilerplate.StructValidation do
+defmodule CommandedAggregateless.StructValidation do
   @moduledoc """
   Provides a default `validate/1` function for structs using Vex
   """
 
   @type validation_result(struct_type) ::
-          Commanded.Boilerplate.result(struct_type, __MODULE__.ValidationError.t())
+          CommandedAggregateless.result(struct_type, __MODULE__.ValidationError.t())
   @type struct(type) :: %{:__struct__ => type, optional(atom()) => any()}
 
   defmodule ValidationError do
@@ -60,7 +60,7 @@ defmodule Commanded.Boilerplate.StructValidation do
   # Credo suggests using a pipeline instead of a nested function call *for a typespec* 🤦
   # credo:disable-for-next-line
   @spec new(Enum.t() | struct(type), type) ::
-          Commanded.Boilerplate.result(struct(type), ValidationError.t())
+          CommandedAggregateless.result(struct(type), ValidationError.t())
         when type: atom()
   def new(attrs, struct_type) when is_struct(attrs) do
     attrs

@@ -1,4 +1,4 @@
-defmodule Commanded.Boilerplate.Aggregate do
+defmodule CommandedAggregateless.Aggregate do
   @moduledoc false
 
   @callback apply(struct(), struct()) :: struct()

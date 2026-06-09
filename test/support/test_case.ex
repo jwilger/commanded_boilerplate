@@ -1,4 +1,4 @@
-defmodule Commanded.Boilerplate.TestCase do
+defmodule CommandedAggregateless.TestCase do
   use ExUnit.CaseTemplate
 
   using do

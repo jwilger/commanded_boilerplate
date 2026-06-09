@@ -1,4 +1,4 @@
-defmodule Commanded.Boilerplate.Command.DefaultLifespan do
+defmodule CommandedAggregateless.Command.DefaultLifespan do
   @moduledoc """
   Stops the aggregate after a command, event or error.
 

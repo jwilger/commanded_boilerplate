@@ -1,4 +1,4 @@
-defmodule Commanded.Boilerplate.TestProjection do
+defmodule CommandedAggregateless.TestProjection do
   @moduledoc """
   Test stub Projection implementation
   """

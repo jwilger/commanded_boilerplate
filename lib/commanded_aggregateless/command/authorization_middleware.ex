@@ -1,16 +1,16 @@
-defmodule Commanded.Boilerplate.Command.AuthorizationMiddleware do
+defmodule CommandedAggregateless.Command.AuthorizationMiddleware do
   @moduledoc """
   Middleware that authorizes commands.
 
-  The command must have an `auth_subject` field that is a `Commanded.Boilerplate.AuthSubject`
+  The command must have an `auth_subject` field that is a `CommandedAggregateless.AuthSubject`
   (or a value that can be converted to one).
   """
 
   @behaviour Commanded.Middleware
 
-  alias Commanded.Boilerplate.AuthSubject
+  alias CommandedAggregateless.AuthSubject
   alias Commanded.Middleware.Pipeline
-  alias Commanded.Boilerplate.Command.CommandProtocol
+  alias CommandedAggregateless.Command.CommandProtocol
 
   require Logger
 

@@ -1,13 +1,13 @@
-Mox.defmock(Commanded.Boilerplate.MockRepo, for: Ecto.Repo)
+Mox.defmock(CommandedAggregateless.MockRepo, for: Ecto.Repo)
 
-defmodule Commanded.Boilerplate.TestQuery do
+defmodule CommandedAggregateless.TestQuery do
   @moduledoc """
   Test stub Query implementation for query using the `all/2` repo function
   """
 
-  alias Commanded.Boilerplate.TestProjection
+  alias CommandedAggregateless.TestProjection
 
-  use Commanded.Boilerplate.Query, repo: Commanded.Boilerplate.MockRepo, repo_fn: :all
+  use CommandedAggregateless.Query, repo: CommandedAggregateless.MockRepo, repo_fn: :all
 
   @type foo() :: String.t()
 
@@ -17,26 +17,26 @@ defmodule Commanded.Boilerplate.TestQuery do
 
   validates(:foo, string: true)
 
-  @impl Commanded.Boilerplate.Query
+  @impl CommandedAggregateless.Query
   def to_query(_query) do
     from(t in TestProjection, select: t)
   end
 end
 
-defmodule Commanded.Boilerplate.TestOneQuery do
+defmodule CommandedAggregateless.TestOneQuery do
   @moduledoc """
   Test stub Query implementation for query using the `one/2` repo function
   """
 
-  alias Commanded.Boilerplate.TestProjection
+  alias CommandedAggregateless.TestProjection
 
-  use Commanded.Boilerplate.Query, repo: Commanded.Boilerplate.MockRepo, repo_fn: :one
+  use CommandedAggregateless.Query, repo: CommandedAggregateless.MockRepo, repo_fn: :one
 
   inputs do
     field(:foo, String.t())
   end
 
-  @impl Commanded.Boilerplate.Query
+  @impl CommandedAggregateless.Query
   def to_query(_query) do
     from(t in TestProjection, select: t)
   end

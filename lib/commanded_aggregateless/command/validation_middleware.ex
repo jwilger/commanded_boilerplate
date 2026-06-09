@@ -1,4 +1,4 @@
-defmodule Commanded.Boilerplate.Command.ValidationMiddleware do
+defmodule CommandedAggregateless.Command.ValidationMiddleware do
   @moduledoc """
   Middleware for validating commands.
   """
@@ -6,7 +6,7 @@ defmodule Commanded.Boilerplate.Command.ValidationMiddleware do
   @behaviour Commanded.Middleware
 
   alias Commanded.Middleware.Pipeline
-  alias Commanded.Boilerplate.Command.CommandProtocol
+  alias CommandedAggregateless.Command.CommandProtocol
 
   import Pipeline
 

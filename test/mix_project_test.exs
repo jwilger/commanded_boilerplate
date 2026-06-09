@@ -1,4 +1,4 @@
-defmodule CommandedBoilerplate.MixProjectTest do
+defmodule CommandedAggregateless.MixProjectTest do
   use ExUnit.Case, async: true
 
   test "targets the current Elixir toolchain" do

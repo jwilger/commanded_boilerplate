@@ -1,7 +1,7 @@
-defmodule Commanded.Boilerplate.StructValidationTest do
-  alias Commanded.Boilerplate.StructValidation.ValidationError
+defmodule CommandedAggregateless.StructValidationTest do
+  alias CommandedAggregateless.StructValidation.ValidationError
 
-  use Commanded.Boilerplate.TestCase, async: true
+  use CommandedAggregateless.TestCase, async: true
 
   describe "new/2" do
     test "returns {:ok, struct} for valid attributes" do

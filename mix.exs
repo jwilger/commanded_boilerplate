@@ -1,14 +1,18 @@
-defmodule CommandedBoilerplate.MixProject do
+defmodule CommandedAggregateless.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :commanded_boilerplate,
-      version: "0.1.2",
+      app: :commanded_aggregateless,
+      version: "1.0.0",
       elixir: "~> 1.20",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      description:
+        "Helpers for building aggregate-less Commanded workflows with validation, authorization, command routing, and read-store queries.",
+      package: package(),
+      docs: docs()
     ]
   end
 
@@ -30,6 +34,7 @@ defmodule CommandedBoilerplate.MixProject do
       {:commanded_ecto_projections, "~> 1.4"},
       {:commanded_eventstore_adapter, "~> 1.4"},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
+      {:ex_doc, "~> 0.40.3", only: :dev, runtime: false},
       {:hammox, "~> 0.7", only: :test},
       {:jason, ">= 1.2.0"},
       {:mix_test_interactive, "~> 5.1", only: [:dev, :test]},
@@ -39,6 +44,21 @@ defmodule CommandedBoilerplate.MixProject do
       {:typed_ecto_schema, "~> 0.4"},
       {:typed_struct, "~> 0.3"},
       {:vex, ">= 0.9.0"}
+    ]
+  end
+
+  defp package do
+    [
+      licenses: ["MIT"],
+      links: %{"GitHub" => "https://github.com/jwilger/commanded_aggregateless"}
+    ]
+  end
+
+  defp docs do
+    [
+      main: "readme",
+      extras: ["README.md"],
+      skip_undefined_reference_warnings_on: &String.starts_with?(&1, "Vex.Validators.")
     ]
   end
 end

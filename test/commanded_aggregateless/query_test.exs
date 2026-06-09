@@ -1,9 +1,9 @@
-defmodule Commanded.Boilerplate.QueryTest do
-  use Commanded.Boilerplate.TestCase
+defmodule CommandedAggregateless.QueryTest do
+  use CommandedAggregateless.TestCase
 
-  alias Commanded.Boilerplate.AuthSubject
+  alias CommandedAggregateless.AuthSubject
 
-  alias Commanded.Boilerplate.QueryTestModules.{
+  alias CommandedAggregateless.QueryTestModules.{
     MockRepo,
     TestAllQuery,
     TestOneQuery,
@@ -14,10 +14,10 @@ defmodule Commanded.Boilerplate.QueryTest do
 
   setup do
     # Replace the application environment for tests
-    Application.put_env(:commanded_boilerplate, :read_only_repo, MockRepo)
+    Application.put_env(:commanded_aggregateless, :read_only_repo, MockRepo)
 
     on_exit(fn ->
-      Application.delete_env(:commanded_boilerplate, :read_only_repo)
+      Application.delete_env(:commanded_aggregateless, :read_only_repo)
     end)
 
     :ok
@@ -43,13 +43,13 @@ defmodule Commanded.Boilerplate.QueryTest do
   describe "validation" do
     test "validates inputs successfully" do
       query = %TestAllQuery{auth_subject: AuthSubject.system_user(), name: "test"}
-      {:ok, validated_query} = Commanded.Boilerplate.Query.QueryOps.validate(query)
+      {:ok, validated_query} = CommandedAggregateless.Query.QueryOps.validate(query)
       assert validated_query == query
     end
 
     test "returns error on invalid data" do
       query = %TestAllQuery{auth_subject: AuthSubject.system_user(), name: 123}
-      {:error, {:invalid_query, error}} = Commanded.Boilerplate.Query.QueryOps.validate(query)
+      {:error, {:invalid_query, error}} = CommandedAggregateless.Query.QueryOps.validate(query)
       # Extract errors from ValidationError struct
       errors = error.errors
       assert Enum.any?(errors, fn {field, _} -> field == :name end)
@@ -57,7 +57,7 @@ defmodule Commanded.Boilerplate.QueryTest do
 
     test "validates numeric constraints" do
       query = %TestOneQuery{auth_subject: AuthSubject.system_user(), id: 0}
-      {:error, {:invalid_query, error}} = Commanded.Boilerplate.Query.QueryOps.validate(query)
+      {:error, {:invalid_query, error}} = CommandedAggregateless.Query.QueryOps.validate(query)
       # Extract errors from ValidationError struct
       errors = error.errors
       assert Enum.any?(errors, fn {field, _} -> field == :id end)
@@ -75,7 +75,7 @@ defmodule Commanded.Boilerplate.QueryTest do
   describe "repo_fn" do
     test "uses :all function for all repo_fn" do
       query = %TestAllQuery{auth_subject: AuthSubject.system_user(), name: "test"}
-      result = Commanded.Boilerplate.Query.QueryOps.repo_fn(query)
+      result = CommandedAggregateless.Query.QueryOps.repo_fn(query)
       assert is_list(result)
       assert [%TestProjection{}] = result
       assert_received {:repo_called, :all, _query}
@@ -83,7 +83,7 @@ defmodule Commanded.Boilerplate.QueryTest do
 
     test "uses :one function for one repo_fn" do
       query = %TestOneQuery{auth_subject: AuthSubject.system_user(), id: 123}
-      result = Commanded.Boilerplate.Query.QueryOps.repo_fn(query)
+      result = CommandedAggregateless.Query.QueryOps.repo_fn(query)
       assert %TestProjection{} = result
       assert_received {:repo_called, :one, _query}
     end
@@ -92,7 +92,7 @@ defmodule Commanded.Boilerplate.QueryTest do
   describe "execute" do
     test "executes query with auth_subject" do
       query = %TestAllQuery{auth_subject: AuthSubject.system_user(), name: "test"}
-      {:ok, results} = Commanded.Boilerplate.Query.execute(query)
+      {:ok, results} = CommandedAggregateless.Query.execute(query)
 
       assert [%TestProjection{name: "test", value: 123}] = results
       assert_received {:with_auth_subject, %AuthSubject{source: "SYSTEM", id: "SYSTEM"}}
@@ -111,14 +111,14 @@ defmodule Commanded.Boilerplate.QueryTest do
         name: "test"
       }
 
-      {:ok, _results} = Commanded.Boilerplate.Query.execute(query)
+      {:ok, _results} = CommandedAggregateless.Query.execute(query)
 
       assert_received {:with_auth_subject, %AuthSubject{source: "SYSTEM", id: "SYSTEM"}}
     end
 
     test "returns validation errors" do
       query = %TestAllQuery{auth_subject: AuthSubject.system_user(), name: 123}
-      {:error, {:invalid_query, _errors}} = Commanded.Boilerplate.Query.execute(query)
+      {:error, {:invalid_query, _errors}} = CommandedAggregateless.Query.execute(query)
     end
   end
 
@@ -129,13 +129,15 @@ defmodule Commanded.Boilerplate.QueryTest do
         name: "test"
       }
 
-      expected = {:ok, %{
-        original_results: [%TestProjection{name: "test", value: 123}],
-        transformed: true,
-        query_name: "test"
-      }}
+      expected =
+        {:ok,
+         %{
+           original_results: [%TestProjection{name: "test", value: 123}],
+           transformed: true,
+           query_name: "test"
+         }}
 
-      assert expected == Commanded.Boilerplate.Query.execute(query)
+      assert expected == CommandedAggregateless.Query.execute(query)
     end
   end
 end

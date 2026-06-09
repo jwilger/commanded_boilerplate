@@ -1,16 +1,15 @@
 defmodule Vex.Validators.AuthSubject do
   @moduledoc """
   Validates that the provided value implements the
-  `Commanded.Boilerplate.AuthSubject.Conversion` protocol
+  `CommandedAggregateless.AuthSubject.Conversion` protocol
   """
 
-  alias Commanded.Boilerplate.AuthSubject
+  alias CommandedAggregateless.AuthSubject
 
   use Vex.Validator
 
   @message_fields [value: "The bad value"]
 
-  @impl Vex.Validator.Behaviour
   def validate(value, options \\ []) do
     if AuthSubject.auth_subject?(value) do
       :ok
@@ -18,7 +17,7 @@ defmodule Vex.Validators.AuthSubject do
       {:error,
        message(
          options,
-         "must implement the Commanded.Boilerplate.AuthSubject.Conversion protocol",
+         "must implement the CommandedAggregateless.AuthSubject.Conversion protocol",
          value: value
        )}
     end

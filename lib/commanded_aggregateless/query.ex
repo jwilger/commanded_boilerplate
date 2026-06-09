@@ -1,11 +1,11 @@
-defmodule Commanded.Boilerplate.Query do
+defmodule CommandedAggregateless.Query do
   @moduledoc """
   Provides common functionality for the execution of queries against the read store
 
   Example:
 
-      defmodule Commanded.Boilerplate.TestQuery do
-        use Commanded.Boilerplate.Query, repo: Commanded.Boilerplate.ReadOnlyRepo, repo_fn: :all
+      defmodule CommandedAggregateless.TestQuery do
+        use CommandedAggregateless.Query, repo: CommandedAggregateless.ReadOnlyRepo, repo_fn: :all
 
         inputs do
           field :foo, :string
@@ -19,7 +19,7 @@ defmodule Commanded.Boilerplate.Query do
       end
   """
 
-  alias Commanded.Boilerplate.AuthSubject
+  alias CommandedAggregateless.AuthSubject
 
   @type t() :: __MODULE__.QueryOps.t()
 
@@ -27,8 +27,8 @@ defmodule Commanded.Boilerplate.Query do
           term() | nil | [Ecto.Schema.t() | term()] | boolean() | Ecto.Schema.t() | Enum.t()
 
   @type validation_error() :: {:invalid_query, keyword(String.t())}
-  @type result() :: Commanded.Boilerplate.result(repo_fn_result(), validation_error())
-  @type result(type) :: Commanded.Boilerplate.result(type, validation_error())
+  @type result() :: CommandedAggregateless.result(repo_fn_result(), validation_error())
+  @type result(type) :: CommandedAggregateless.result(type, validation_error())
   @type error() :: validation_error()
 
   @callback to_query(t()) :: Ecto.Query.t()
@@ -37,7 +37,7 @@ defmodule Commanded.Boilerplate.Query do
   Callback that allows a query to manipulate the results before they are returned.
 
   A default implementation that simply returns the result unchanged is provided when
-  using `use Commanded.Boilerplate.Query`.
+  using `use CommandedAggregateless.Query`.
   """
   @callback handle_result(result(), t()) :: result()
 
@@ -45,17 +45,19 @@ defmodule Commanded.Boilerplate.Query do
     @moduledoc """
     Defines common functionality for the execution of queries against the read store
 
-    While the `Commanded.Boilerplate.Query` module can be used to define query modules, you can
+    While the `CommandedAggregateless.Query` module can be used to define query modules, you can
     also use any data type for which you have provided an implementation of this
     protocol.
     """
 
-    alias Commanded.Boilerplate.Query
+    @fallback_to_any true
+
+    alias CommandedAggregateless.Query
 
     @doc """
     Performs validation on the query prior to execution.
     """
-    @spec validate(t()) :: Commanded.Boilerplate.result(t(), Query.validation_error())
+    @spec validate(t()) :: CommandedAggregateless.result(t(), Query.validation_error())
     def validate(query)
 
     @doc """
@@ -65,31 +67,47 @@ defmodule Commanded.Boilerplate.Query do
     def repo_fn(query)
   end
 
+  defimpl QueryOps, for: Any do
+    @impl CommandedAggregateless.Query.QueryOps
+    def validate(query) do
+      raise Protocol.UndefinedError,
+        protocol: CommandedAggregateless.Query.QueryOps,
+        value: query
+    end
+
+    @impl CommandedAggregateless.Query.QueryOps
+    def repo_fn(query) do
+      raise Protocol.UndefinedError,
+        protocol: CommandedAggregateless.Query.QueryOps,
+        value: query
+    end
+  end
+
   @doc """
-  Sets up a query module for use with the `Commanded.Boilerplate.Query.QueryOps` protocol.
+  Sets up a query module for use with the `CommandedAggregateless.Query.QueryOps` protocol.
 
   See module documentation for an example.
   """
   @spec __using__(keyword()) :: Macro.t()
   defmacro __using__(opts \\ []) do
     repo_fn = Keyword.fetch!(opts, :repo_fn)
-    repo = Keyword.get(opts, :repo, Commanded.Boilerplate.ReadOnlyRepo)
+    repo = Keyword.get(opts, :repo, CommandedAggregateless.ReadOnlyRepo)
 
     quote location: :keep do
-      require Commanded.Boilerplate.Query
+      require CommandedAggregateless.Query
 
-      use Commanded.Boilerplate.StructValidation
+      use CommandedAggregateless.StructValidation
 
-      @behaviour Commanded.Boilerplate.Query
+      @behaviour CommandedAggregateless.Query
 
-      import Commanded.Boilerplate.Query, only: [inputs: 1]
+      import CommandedAggregateless.Query, only: [inputs: 1]
       import Ecto.Query, only: [from: 2]
 
       defimpl Ecto.Queryable do
         def to_query(query), do: __impl__(:for).to_query(query)
       end
 
-      defimpl Commanded.Boilerplate.Query.QueryOps do
+      defimpl CommandedAggregateless.Query.QueryOps do
         def validate(query) when is_struct(query) do
           case query.__struct__.validate(query) do
             {:error, errors} -> {:error, {:invalid_query, errors}}
@@ -162,7 +180,9 @@ defmodule Commanded.Boilerplate.Query do
            end) do
         {:ok, result} ->
           query.__struct__.handle_result(result, query)
-        error -> error
+
+        error ->
+          error
       end
     end
   end
@@ -175,6 +195,6 @@ defmodule Commanded.Boilerplate.Query do
   end
 
   defp repo do
-    Application.get_env(:commanded_boilerplate, :read_only_repo)
+    Application.get_env(:commanded_aggregateless, :read_only_repo)
   end
 end

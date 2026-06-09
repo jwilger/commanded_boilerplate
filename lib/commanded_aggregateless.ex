@@ -1,4 +1,4 @@
-defmodule Commanded.Boilerplate do
+defmodule CommandedAggregateless do
   @type result(error) :: :ok | {:error, error}
   @type result(ok, error) :: {:ok, ok} | {:error, error}
 end

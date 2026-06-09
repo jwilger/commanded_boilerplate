@@ -1,16 +1,16 @@
-defmodule Commanded.Boilerplate.Command do
+defmodule CommandedAggregateless.Command do
   @moduledoc ~S"""
   Provides a basic command module setup to reduce boilerplate
 
   Example:
 
-      defmodule Commanded.Boilerplate.TestCommand do
-        use Commanded.Boilerplate.Command,
+      defmodule CommandedAggregateless.TestCommand do
+        use CommandedAggregateless.Command,
           identifier: :id,
           prefix: "test",
           required_permission: "manage_tests"
 
-        alias Commanded.Boilerplate.TestAggregateCreated
+        alias CommandedAggregateless.TestAggregateCreated
 
         inputs do
           field :id, binary()
@@ -42,27 +42,28 @@ defmodule Commanded.Boilerplate.Command do
       end
   """
 
-  alias Commanded.Boilerplate.StructValidation.ValidationError
-
-  require Logger
+  alias CommandedAggregateless.StructValidation.ValidationError
 
   @type event :: struct()
 
   @type validation_result() ::
-          Commanded.Boilerplate.result({:ok, __MODULE__.CommandProtocol.t()}, ValidationError.t())
+          CommandedAggregateless.result(
+            {:ok, __MODULE__.CommandProtocol.t()},
+            ValidationError.t()
+          )
 
-  @type authorization_result() :: Commanded.Boilerplate.result(:unauthorized)
+  @type authorization_result() :: CommandedAggregateless.result(:unauthorized)
 
   @type execution_error :: {atom(), String.t() | nil}
   @type execution_success :: list(event())
   @type execution_result ::
-          Commanded.Boilerplate.result(execution_success(), execution_error())
-          | Commanded.Boilerplate.result(execution_error())
+          CommandedAggregateless.result(execution_success(), execution_error())
+          | CommandedAggregateless.result(execution_error())
 
   @doc """
   Validates the data in a command
 
-  Commands all use the `Commanded.Boilerplate.StructValidation` module to
+  Commands all use the `CommandedAggregateless.StructValidation` module to
   validate their data by default, but you can override this behavior by
   implementing the `validate/1` function in your command module.
   """
@@ -75,7 +76,7 @@ defmodule Commanded.Boilerplate.Command do
   if it is not.
 
   The default implementation checks if the `auth_subject` has the required
-  permission as specified when calling `use Commanded.Boilerplate.Command`.
+  permission as specified when calling `use CommandedAggregateless.Command`.
   """
   @callback authorize(__MODULE__.CommandProtocol.t()) :: authorization_result()
 
@@ -95,12 +96,14 @@ defmodule Commanded.Boilerplate.Command do
     Protocol to be implemented by all command modules
     """
 
-    alias Commanded.Boilerplate.Command
+    @fallback_to_any true
+
+    alias CommandedAggregateless.Command
 
     @doc """
     Validates the data in a command
 
-    See `Commanded.Boilerplate.Command.ValidationMiddleware` for more information.
+    See `CommandedAggregateless.Command.ValidationMiddleware` for more information.
     """
     @spec validate(t()) :: Command.validation_result()
     def validate(command)
@@ -108,10 +111,26 @@ defmodule Commanded.Boilerplate.Command do
     @doc """
     Authorizes a command
 
-    See `Commanded.Boilerplate.Command.AuthorizationMiddleware` for more information.
+    See `CommandedAggregateless.Command.AuthorizationMiddleware` for more information.
     """
     @spec authorize(t()) :: Command.authorization_result()
     def authorize(command)
+  end
+
+  defimpl CommandProtocol, for: Any do
+    @impl CommandedAggregateless.Command.CommandProtocol
+    def validate(command) do
+      raise Protocol.UndefinedError,
+        protocol: CommandedAggregateless.Command.CommandProtocol,
+        value: command
+    end
+
+    @impl CommandedAggregateless.Command.CommandProtocol
+    def authorize(command) do
+      raise Protocol.UndefinedError,
+        protocol: CommandedAggregateless.Command.CommandProtocol,
+        value: command
+    end
   end
 
   @doc """
@@ -122,26 +141,26 @@ defmodule Commanded.Boilerplate.Command do
     {required_permission, opts} = Keyword.pop(opts, :required_permission)
 
     quote do
-      alias Commanded.Boilerplate.AuthSubject
-      require Commanded.Boilerplate.Command
+      alias CommandedAggregateless.AuthSubject
+      require CommandedAggregateless.Command
 
-      use Commanded.Boilerplate.StructValidation
-      use Commanded.Boilerplate.Command.Router
+      use CommandedAggregateless.StructValidation
+      use CommandedAggregateless.Command.Router
 
       @dispatch_opts unquote(opts)
       @required_permission unquote(required_permission)
 
       register_command(__MODULE__, @dispatch_opts)
 
-      @behaviour Commanded.Boilerplate.Command
+      @behaviour CommandedAggregateless.Command
 
-      import Commanded.Boilerplate.Command
+      import CommandedAggregateless.Command
 
-      @impl Commanded.Boilerplate.Command
-      defdelegate validate(command), to: Commanded.Boilerplate.StructValidation
+      @impl CommandedAggregateless.Command
+      defdelegate validate(command), to: CommandedAggregateless.StructValidation
       defoverridable(validate: 1)
 
-      @impl Commanded.Boilerplate.Command
+      @impl CommandedAggregateless.Command
       def authorize(command) do
         if AuthSubject.has_permission?(
              command.auth_subject,
@@ -155,19 +174,19 @@ defmodule Commanded.Boilerplate.Command do
 
       defoverridable(authorize: 1)
 
-      @impl Commanded.Boilerplate.Command
+      @impl CommandedAggregateless.Command
       def handle(_aggregate, _command),
         do: {:error, {:not_implemented, "handle/2 not implemented in #{__MODULE__}"}}
 
       defoverridable(handle: 2)
 
-      defimpl Commanded.Boilerplate.Command.CommandProtocol do
-        @impl Commanded.Boilerplate.Command.CommandProtocol
+      defimpl CommandedAggregateless.Command.CommandProtocol do
+        @impl CommandedAggregateless.Command.CommandProtocol
         def validate(command) do
           __impl__(:for).validate(command)
         end
 
-        @impl Commanded.Boilerplate.Command.CommandProtocol
+        @impl CommandedAggregateless.Command.CommandProtocol
         def authorize(command) do
           __impl__(:for).authorize(command)
         end
@@ -186,14 +205,14 @@ defmodule Commanded.Boilerplate.Command do
 
     fields =
       quote do
-        field(:auth_subject, Commanded.Boilerplate.AuthSubject.Conversion.t(), enforce: true)
+        field(:auth_subject, CommandedAggregateless.AuthSubject.Conversion.t(), enforce: true)
         unquote(block)
       end
 
     ast = TypedStruct.__typedstruct__(fields, opts)
 
     quote do
-      alias Commanded.Boilerplate.AuthSubject
+      alias CommandedAggregateless.AuthSubject
       # Create a lexical scope.
       (fn -> unquote(ast) end).()
     end
@@ -212,11 +231,13 @@ defmodule Commanded.Boilerplate.Command do
       defmodule Aggregate do
         @moduledoc false
 
-        @behaviour Commanded.Boilerplate.Aggregate
+        require Logger
+
+        @behaviour CommandedAggregateless.Aggregate
 
         unquote(ast)
 
-        @impl Commanded.Boilerplate.Aggregate
+        @impl CommandedAggregateless.Aggregate
         def apply(aggregate, event) do
           Logger.debug(
             "Skipping application of event #{inspect(event.__struct__)} to aggregate #{inspect(aggregate.__struct__)}. Add an `apply/2` clause to handle this event."

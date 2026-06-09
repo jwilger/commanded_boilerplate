@@ -1,9 +1,9 @@
-defmodule Commanded.Boilerplate.TestAggregate do
+defmodule CommandedAggregateless.TestAggregate do
   @moduledoc """
   This aggregate is used as a stub in our tests
   """
 
-  alias Commanded.Boilerplate.TestAggregateCreated
+  alias CommandedAggregateless.TestAggregateCreated
 
   @type t() :: %__MODULE__{}
 

@@ -1,21 +1,19 @@
-# CommandedBoilerplate
+# CommandedAggregateless
 
-**TODO: Add description**
+Helpers for building aggregate-less Commanded workflows with validation, authorization, command
+routing, and read-store queries.
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `commanded_boilerplate` to your list of dependencies in `mix.exs`:
+The package can be installed by adding `commanded_aggregateless` to your list of dependencies in
+`mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:commanded_boilerplate, "~> 0.1.0"}
+    {:commanded_aggregateless, "~> 1.0"}
   ]
 end
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at <https://hexdocs.pm/commanded_boilerplate>.
-
+Documentation is published at <https://hexdocs.pm/commanded_aggregateless>.

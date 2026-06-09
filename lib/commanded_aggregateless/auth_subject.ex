@@ -1,4 +1,4 @@
-defmodule Commanded.Boilerplate.AuthSubject do
+defmodule CommandedAggregateless.AuthSubject do
   @moduledoc """
   Represents an actor that is attempting to execute a command or a query
   """
@@ -6,7 +6,7 @@ defmodule Commanded.Boilerplate.AuthSubject do
   require Logger
 
   use TypedStruct
-  use Commanded.Boilerplate.StructValidation
+  use CommandedAggregateless.StructValidation
 
   @typedoc "The original entity that was cast to an AuthSubject"
   @type source :: String.t()
@@ -47,7 +47,7 @@ defmodule Commanded.Boilerplate.AuthSubject do
   """
   @spec valid_permissions() :: list(String.t())
   def valid_permissions,
-    do: Application.get_env(:commanded_boilerplate, :valid_permissions, []) ++ ["superuser"]
+    do: Application.get_env(:commanded_aggregateless, :valid_permissions, []) ++ ["superuser"]
 
   @doc """
   Creates a new AuthSubject from the given data.
@@ -193,22 +193,22 @@ defmodule Commanded.Boilerplate.AuthSubject do
     @doc """
     Implement this function to convert an entity to an AuthSubject
     """
-    @spec convert(term()) :: Commanded.Boilerplate.AuthSubject.t()
+    @spec convert(term()) :: CommandedAggregateless.AuthSubject.t()
     def convert(auth_subject)
   end
 
   defimpl Conversion do
-    @impl Commanded.Boilerplate.AuthSubject.Conversion
+    @impl CommandedAggregateless.AuthSubject.Conversion
     def convert(auth_subject), do: auth_subject
   end
 end
 
-defimpl Commanded.Boilerplate.AuthSubject.Conversion, for: Map do
-  @impl Commanded.Boilerplate.AuthSubject.Conversion
+defimpl CommandedAggregateless.AuthSubject.Conversion, for: Map do
+  @impl CommandedAggregateless.AuthSubject.Conversion
   def convert(%{source: source, id: id, permissions: permissions}) do
     id = Newt.maybe_unwrap(id)
 
-    %Commanded.Boilerplate.AuthSubject{
+    %CommandedAggregateless.AuthSubject{
       source: source,
       id: id,
       permissions: permissions
@@ -218,8 +218,8 @@ defimpl Commanded.Boilerplate.AuthSubject.Conversion, for: Map do
   def convert(_value), do: raise(Protocol.UndefinedError)
 end
 
-defimpl Commanded.Boilerplate.AuthSubject.Conversion, for: List do
-  @impl Commanded.Boilerplate.AuthSubject.Conversion
+defimpl CommandedAggregateless.AuthSubject.Conversion, for: List do
+  @impl CommandedAggregateless.AuthSubject.Conversion
   def convert(convertable) do
     convertable =
       try do
@@ -228,19 +228,19 @@ defimpl Commanded.Boilerplate.AuthSubject.Conversion, for: List do
         ArgumentError -> reraise(Protocol.UndefinedError, __STACKTRACE__)
       end
 
-    Commanded.Boilerplate.AuthSubject.Conversion.convert(convertable)
+    CommandedAggregateless.AuthSubject.Conversion.convert(convertable)
   end
 end
 
-defimpl Commanded.Boilerplate.AuthSubject.Conversion, for: Atom do
-  @impl Commanded.Boilerplate.AuthSubject.Conversion
-  def convert(:system), do: Commanded.Boilerplate.AuthSubject.system_user()
+defimpl CommandedAggregateless.AuthSubject.Conversion, for: Atom do
+  @impl CommandedAggregateless.AuthSubject.Conversion
+  def convert(:system), do: CommandedAggregateless.AuthSubject.system_user()
 
   def convert(value),
     do:
       raise(
         Protocol.UndefinedError.exception(
-          protocol: Commanded.Boilerplate.AuthSubject.Conversion,
+          protocol: CommandedAggregateless.AuthSubject.Conversion,
           value: value
         )
       )

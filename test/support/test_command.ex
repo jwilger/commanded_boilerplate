@@ -1,11 +1,11 @@
-defmodule Commanded.Boilerplate.TestCommand do
+defmodule CommandedAggregateless.TestCommand do
   @moduledoc """
   This command is used as a stub in our tests.
   """
 
-  alias Commanded.Boilerplate.TestAggregateCreated
+  alias CommandedAggregateless.TestAggregateCreated
 
-  use Commanded.Boilerplate.Command, identifier: :id
+  use CommandedAggregateless.Command, identifier: :id
 
   inputs do
     field(:id, binary())
@@ -16,13 +16,13 @@ defmodule Commanded.Boilerplate.TestCommand do
   aggregate do
     field(:id, binary())
 
-    @impl Commanded.Boilerplate.Aggregate
+    @impl CommandedAggregateless.Aggregate
     def apply(aggregate, %TestAggregateCreated{} = _event) do
       aggregate
     end
   end
 
-  @impl Commanded.Boilerplate.Command
+  @impl CommandedAggregateless.Command
   def handle(_aggregate, %__MODULE__{error_in_handle: true}),
     do: {:error, {:command_handler_error, "There was an error handling the command"}}
 
@@ -30,6 +30,6 @@ defmodule Commanded.Boilerplate.TestCommand do
     {:ok, %TestAggregateCreated{id: command.id}}
   end
 
-  @impl Commanded.Boilerplate.Command
+  @impl CommandedAggregateless.Command
   def authorize(%__MODULE__{}), do: :ok
 end

@@ -1,5 +1,5 @@
 defmodule SampleStruct do
-  alias Commanded.Boilerplate.StructValidation
+  alias CommandedAggregateless.StructValidation
 
   use StructValidation
 

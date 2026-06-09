@@ -1,4 +1,4 @@
-defmodule Commanded.Boilerplate.QueryTestModules do
+defmodule CommandedAggregateless.QueryTestModules do
   # Mock schema for our test queries
   defmodule TestProjection do
     use Ecto.Schema
@@ -29,7 +29,7 @@ defmodule Commanded.Boilerplate.QueryTestModules do
 
   # Test query with :all repo function
   defmodule TestAllQuery do
-    use Commanded.Boilerplate.Query, repo: MockRepo, repo_fn: :all
+    use CommandedAggregateless.Query, repo: MockRepo, repo_fn: :all
 
     inputs do
       field(:name, :string)
@@ -45,7 +45,7 @@ defmodule Commanded.Boilerplate.QueryTestModules do
 
   # Test query with :one repo function
   defmodule TestOneQuery do
-    use Commanded.Boilerplate.Query, repo: MockRepo, repo_fn: :one
+    use CommandedAggregateless.Query, repo: MockRepo, repo_fn: :one
 
     inputs do
       field(:id, :integer)
@@ -61,7 +61,7 @@ defmodule Commanded.Boilerplate.QueryTestModules do
 
   # Test query with no inputs
   defmodule TestEmptyQuery do
-    use Commanded.Boilerplate.Query, repo: MockRepo, repo_fn: :all
+    use CommandedAggregateless.Query, repo: MockRepo, repo_fn: :all
 
     inputs(:none)
 
@@ -73,7 +73,7 @@ defmodule Commanded.Boilerplate.QueryTestModules do
 
   # Test query with handle_result callback
   defmodule TestQueryWithResultHandler do
-    use Commanded.Boilerplate.Query, repo: MockRepo, repo_fn: :all
+    use CommandedAggregateless.Query, repo: MockRepo, repo_fn: :all
 
     inputs do
       field(:name, :string)
@@ -89,11 +89,12 @@ defmodule Commanded.Boilerplate.QueryTestModules do
     # This callback should be called by execute/1 to allow
     # transforming the result before returning it
     def handle_result({:ok, results}, query) do
-      {:ok, %{
-        original_results: results,
-        transformed: true,
-        query_name: query.name
-      }}
+      {:ok,
+       %{
+         original_results: results,
+         transformed: true,
+         query_name: query.name
+       }}
     end
 
     def handle_result({:error, reason}, _query) do
